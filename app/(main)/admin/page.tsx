@@ -106,17 +106,20 @@ export default function AdminPage() {
         if (!confirm('Are you sure you want to DELETE this user? This cannot be undone!')) return
         setActionLoading(userId)
 
-        // Delete user's messages
-        await (supabase.from('messages') as any).delete().eq('user_id', userId)
+        try {
+            const response = await fetch('/api/admin/delete-user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, adminId: currentUser?.id })
+            })
 
-        // Delete user's reactions
-        await (supabase.from('reactions') as any).delete().eq('user_id', userId)
-
-        // Delete user's channel memberships
-        await (supabase.from('channel_members') as any).delete().eq('user_id', userId)
-
-        // Delete user's profile
-        await (supabase.from('profiles') as any).delete().eq('id', userId)
+            if (!response.ok) {
+                const data = await response.json()
+                alert('Error: ' + data.error)
+            }
+        } catch (error) {
+            console.error('Delete error:', error)
+        }
 
         await refreshData()
         setActionLoading(null)
