@@ -3,13 +3,14 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Mail, Lock, User, Loader2 } from 'lucide-react'
+import { Mail, Lock, User, Phone, Loader2 } from 'lucide-react'
 
 export default function SignupPage() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [fullName, setFullName] = useState('')
     const [username, setUsername] = useState('')
+    const [phone, setPhone] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
@@ -37,6 +38,7 @@ export default function SignupPage() {
                 id: data.user.id,
                 username,
                 full_name: fullName,
+                phone_number: phone || null,
                 status: 'online',
             })
 
@@ -101,6 +103,15 @@ export default function SignupPage() {
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">@</span>
                             <input type="text" value={username} onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))} required
                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 pl-10 pr-4 text-white" placeholder="johndoe"/>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Phone number <span className="text-gray-500">(optional)</span></label>
+                        <div className="relative">
+                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+                            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
+                                   className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 pl-10 pr-4 text-white" placeholder="+1 (555) 123-4567"/>
                         </div>
                     </div>
 

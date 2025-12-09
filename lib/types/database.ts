@@ -9,6 +9,7 @@ export interface Database {
                     username: string
                     full_name: string | null
                     avatar_url: string | null
+                    phone_number: string | null
                     status: 'online' | 'offline' | 'away'
                     last_seen: string
                     created_at: string
@@ -19,6 +20,7 @@ export interface Database {
                     username: string
                     full_name?: string | null
                     avatar_url?: string | null
+                    phone_number: string | null
                     status?: 'online' | 'offline' | 'away'
                     last_seen?: string
                     created_at?: string
@@ -28,6 +30,7 @@ export interface Database {
                     username?: string
                     full_name?: string | null
                     avatar_url?: string | null
+                    phone_number: string | null
                     status?: 'online' | 'offline' | 'away'
                     last_seen?: string
                 }
