@@ -20,20 +20,20 @@ export default async function MainLayout({ children }: { children: React.ReactNo
         .select('*', { count: 'exact', head: true })
 
     return (
-        <div className="flex flex-col h-screen bg-gray-900">
-            {/* Header - Full Width */}
-            <header className="w-full h-16 bg-gradient-to-r from-green-700 to-green-600 border-b border-green-500 flex items-center justify-between px-6 shrink-0 shadow-lg">
+        <div className="h-screen flex flex-col bg-gray-900 overflow-hidden">
+            {/* Header - Sticky */}
+            <header className="sticky top-0 z-50 w-full h-16 bg-gradient-to-r from-green-700 to-green-600 border-b border-green-500 flex items-center justify-between px-4 md:px-6 shrink-0 shadow-lg">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-2xl shadow">⚽</div>
                     <div>
-                        <span className="font-bold text-white text-xl">Smyrna Soccer</span>
+                        <span className="font-bold text-white text-lg md:text-xl">Smyrna Soccer</span>
                         <p className="text-green-200 text-xs">Team Chat • {memberCount || 0} members</p>
                     </div>
                 </div>
-                <nav className="flex items-center gap-6">
+                <nav className="flex items-center gap-3 md:gap-6">
                     <a
                         href="https://smyrnasoccer.com"
-                        className="text-sm text-green-100 hover:text-white font-medium"
+                        className="text-xs md:text-sm text-green-100 hover:text-white font-medium"
                     >
                         Home
                     </a>
@@ -41,7 +41,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
                         href="https://www.fassiltsegaye.com"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-green-100 hover:text-white font-medium"
+                        className="text-xs md:text-sm text-green-100 hover:text-white font-medium hidden sm:block"
                     >
                         About Developer
                     </a>
@@ -52,14 +52,11 @@ export default async function MainLayout({ children }: { children: React.ReactNo
             <div className="flex flex-1 overflow-hidden">
                 <Sidebar user={user} profile={profile} />
                 <div className="flex-1 flex flex-col overflow-hidden">
-                    {/* Chat area */}
+                    {/* Chat area - Scrollable */}
                     <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
 
-                    {/* Spacer/Divider */}
-                    <div className="h-2 bg-gray-900 shrink-0"></div>
-
-                    {/* Footer - Under writing section */}
-                    <footer className="w-full h-12 bg-gray-950 border-t-2 border-gray-700 flex items-center justify-center px-4 shrink-0">
+                    {/* Footer - Sticky at bottom */}
+                    <footer className="sticky bottom-0 w-full h-10 bg-gray-950 border-t-2 border-gray-700 flex items-center justify-center px-4 shrink-0">
                         <p className="text-xs text-gray-500">
                             © 2025 Smyrna Soccer • Created by{' '}
                             <a

@@ -25,23 +25,22 @@ export default function MessageList({ messages, loading, currentUserId }: Messag
         )
     }
 
-    if (messages.length === 0) {
-        return (
-            <div className="flex-1 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="text-4xl mb-4">👋</div>
-                    <h3 className="text-lg font-medium text-white">No messages yet</h3>
-                    <p className="text-gray-400">Be the first to say something!</p>
-                </div>
-            </div>
-        )
-    }
-
     return (
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
-            {messages.map(message => (
-                <MessageItem key={message.id} message={message} isOwn={message.user_id === currentUserId} currentUserId={currentUserId} />
-            ))}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+            {messages.length === 0 ? (
+                <div className="flex-1 flex items-center justify-center text-gray-500">
+                    <p>No messages yet. Start the conversation!</p>
+                </div>
+            ) : (
+                messages.map((message) => (
+                    <MessageItem
+                        key={message.id}
+                        message={message}
+                        isOwn={message.user_id === currentUserId}
+                        currentUserId={currentUserId}
+                    />
+                ))
+            )}
             <div ref={bottomRef} />
         </div>
     )
