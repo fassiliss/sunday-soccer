@@ -2,13 +2,14 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { User } from '@supabase/supabase-js'
 import { Profile } from '@/lib/types/database'
 import { createClient } from '@/lib/supabase/client'
 import { useChannels } from '@/lib/hooks'
 import ChannelList from './ChannelList'
 import ProfileSettings from '../ui/ProfileSettings'
-import { Search, Plus, X, Menu, LogOut, Settings } from 'lucide-react'
+import { Search, Plus, X, Menu, LogOut, Settings, Shield } from 'lucide-react'
 
 interface SidebarProps {
     user: User
@@ -101,6 +102,20 @@ export default function Sidebar({ user, profile }: SidebarProps) {
                     )}
 
                     <ChannelList channels={filteredChannels} loading={loading} onChannelClick={() => setIsOpen(false)} />
+
+                    {/* Admin Link - Only show for admins */}
+                    {currentProfile?.is_admin && (
+                        <div className="mt-4 pt-4 border-t border-gray-700">
+                            <Link
+                                href="/admin"
+                                onClick={() => setIsOpen(false)}
+                                className="flex items-center gap-2 px-3 py-2 text-yellow-500 hover:bg-gray-700 rounded-lg"
+                            >
+                                <Shield size={16} />
+                                <span className="text-sm font-medium">Admin Panel</span>
+                            </Link>
+                        </div>
+                    )}
                 </div>
 
                 <div className="p-3 border-t border-gray-700">

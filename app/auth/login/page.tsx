@@ -21,12 +21,29 @@ export default function LoginPage() {
         setLoading(true)
         setError(null)
 
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
+        const { data, error: loginError } = await supabase.auth.signInWithPassword({ email, password })
 
-        if (error) {
-            setError(error.message)
+        if (loginError) {
+            setError(loginError.message)
             setLoading(false)
-        } else {
+            return
+        }
+
+        if (data.user) {
+            // Check if user is banned
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('is_banned, banned_reason')
+                .eq('id', data.user.id)
+                .single()
+
+            if (profile?.is_banned) {
+                await supabase.auth.signOut()
+                setError(`You have been banned. Reason: ${profile.banned_reason || 'No reason provided'}`)
+                setLoading(false)
+                return
+            }
+
             router.push('/channel/general')
             router.refresh()
         }

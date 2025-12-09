@@ -11,6 +11,10 @@ export interface Database {
                     avatar_url: string | null
                     phone_number: string | null
                     status: 'online' | 'offline' | 'away'
+                    is_admin: boolean
+                    is_banned: boolean
+                    banned_at: string | null
+                    banned_reason: string | null
                     last_seen: string
                     created_at: string
                     updated_at: string
@@ -20,8 +24,12 @@ export interface Database {
                     username: string
                     full_name?: string | null
                     avatar_url?: string | null
-                    phone_number: string | null
+                    phone_number?: string | null
                     status?: 'online' | 'offline' | 'away'
+                    is_admin?: boolean
+                    is_banned?: boolean
+                    banned_at?: string | null
+                    banned_reason?: string | null
                     last_seen?: string
                     created_at?: string
                     updated_at?: string
@@ -30,8 +38,12 @@ export interface Database {
                     username?: string
                     full_name?: string | null
                     avatar_url?: string | null
-                    phone_number: string | null
+                    phone_number?: string | null
                     status?: 'online' | 'offline' | 'away'
+                    is_admin?: boolean
+                    is_banned?: boolean
+                    banned_at?: string | null
+                    banned_reason?: string | null
                     last_seen?: string
                 }
             }
