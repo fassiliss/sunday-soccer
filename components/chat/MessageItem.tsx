@@ -3,13 +3,16 @@
 import { useState } from 'react'
 import { MessageWithRelations } from '@/lib/types/database'
 import { useReactions } from '@/lib/hooks'
-import { Smile } from 'lucide-react'
+import { Smile, Trash2 } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 const EMOJIS = ['👍', '❤️', '😂', '🔥', '⚽', '🎉']
 
 export default function MessageItem({ message, isOwn, currentUserId }: { message: MessageWithRelations; isOwn: boolean; currentUserId?: string }) {
     const [showPicker, setShowPicker] = useState(false)
+    const [deleted, setDeleted] = useState(false)
     const { toggleReaction } = useReactions()
+    const supabase = createClient()
     const user = message.user
     const userName = user?.full_name || user?.username || 'Unknown'
 
@@ -25,6 +28,16 @@ export default function MessageItem({ message, isOwn, currentUserId }: { message
         await toggleReaction(message.id, emoji, hasReacted)
         setShowPicker(false)
     }
+
+    const handleDelete = async () => {
+        if (!confirm('Delete this message?')) return
+        await (supabase.from('messages') as any)
+            .update({ is_deleted: true })
+            .eq('id', message.id)
+        setDeleted(true)
+    }
+
+    if (deleted) return null
 
     return (
         <div className={`group flex gap-3 ${isOwn ? 'flex-row-reverse' : ''}`}>
@@ -51,12 +64,17 @@ export default function MessageItem({ message, isOwn, currentUserId }: { message
                     </div>
                 )}
 
-                <div className="relative">
+                <div className={`relative flex gap-2 ${isOwn ? 'justify-end' : ''}`}>
                     <button onClick={() => setShowPicker(!showPicker)} className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-gray-300 text-xs mt-1">
                         <Smile size={14} className="inline mr-1" />React
                     </button>
+                    {isOwn && (
+                        <button onClick={handleDelete} className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 text-xs mt-1">
+                            <Trash2 size={14} className="inline mr-1" />Delete
+                        </button>
+                    )}
                     {showPicker && (
-                        <div className={`absolute z-10 mt-1 bg-gray-700 rounded-lg p-2 flex gap-1 ${isOwn ? 'right-0' : 'left-0'}`}>
+                        <div className={`absolute z-10 mt-6 bg-gray-700 rounded-lg p-2 flex gap-1 ${isOwn ? 'right-0' : 'left-0'}`}>
                             {EMOJIS.map(emoji => (
                                 <button key={emoji} onClick={() => handleReaction(emoji)} className="hover:bg-gray-600 p-1 rounded text-lg">{emoji}</button>
                             ))}
