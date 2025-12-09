@@ -31,11 +31,13 @@ export default function LoginPage() {
 
         if (data.user) {
             // Check if user is banned
-            const { data: profile } = await supabase
+            const { data: profileData } = await supabase
                 .from('profiles')
                 .select('is_banned, banned_reason')
                 .eq('id', data.user.id)
                 .single()
+
+            const profile = profileData as { is_banned: boolean; banned_reason: string | null } | null
 
             if (profile?.is_banned) {
                 await supabase.auth.signOut()
