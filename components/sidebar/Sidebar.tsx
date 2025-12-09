@@ -50,19 +50,27 @@ export default function Sidebar({ user, profile }: SidebarProps) {
 
     return (
         <>
-            <button onClick={() => setIsOpen(true)} className="md:hidden fixed top-4 left-4 z-50 p-2 bg-gray-800 rounded-lg text-gray-400">
+            {/* Hamburger Menu - Right side in header */}
+            <button
+                onClick={() => setIsOpen(true)}
+                className="md:hidden fixed top-4 right-4 z-50 p-2 bg-green-800 hover:bg-green-700 rounded-lg text-white shadow-lg"
+            >
                 <Menu size={24} />
             </button>
 
+            {/* Overlay */}
             {isOpen && <div className="md:hidden fixed inset-0 bg-black/50 z-40" onClick={() => setIsOpen(false)} />}
 
+            {/* Sidebar */}
             <aside className={`fixed md:relative inset-y-0 left-0 z-50 w-64 bg-gray-800 flex flex-col transform transition-transform ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
                 <div className="p-4 border-b border-gray-700 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">⚽</div>
                         <span className="font-semibold text-white">Sunday Soccer</span>
                     </div>
-                    <button onClick={() => setIsOpen(false)} className="md:hidden text-gray-400"><X size={20} /></button>
+                    <button onClick={() => setIsOpen(false)} className="md:hidden text-gray-400 hover:text-white">
+                        <X size={20} />
+                    </button>
                 </div>
 
                 <div className="p-3">
