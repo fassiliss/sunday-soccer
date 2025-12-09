@@ -29,12 +29,14 @@ export default function AdminPage() {
                 .eq('id', user.id)
                 .single()
 
-            if (!profile?.is_admin) {
+            const profileData = profile as Profile | null
+
+            if (!profileData?.is_admin) {
                 router.push('/channel/general')
                 return
             }
 
-            setCurrentUser(profile as Profile)
+            setCurrentUser(profileData)
 
             // Fetch all members
             const { data: membersData } = await supabase
