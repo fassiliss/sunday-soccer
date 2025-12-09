@@ -11,8 +11,10 @@ interface MessageListProps {
 }
 
 export default function MessageList({ messages, loading, currentUserId }: MessageListProps) {
+    const containerRef = useRef<HTMLDivElement>(null)
     const bottomRef = useRef<HTMLDivElement>(null)
 
+    // Scroll to bottom on new messages
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [messages])
@@ -26,9 +28,13 @@ export default function MessageList({ messages, loading, currentUserId }: Messag
     }
 
     return (
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+        <div
+            ref={containerRef}
+            className="flex-1 overflow-y-auto min-h-0 p-4 space-y-4"
+            style={{ maxHeight: 'calc(100vh - 250px)' }}
+        >
             {messages.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-gray-500">
+                <div className="flex items-center justify-center h-full text-gray-500">
                     <p>No messages yet. Start the conversation!</p>
                 </div>
             ) : (

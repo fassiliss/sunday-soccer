@@ -17,7 +17,6 @@ export default function ChannelPage() {
     const [currentUser, setCurrentUser] = useState<Profile | null>(null)
     const supabase = useMemo(() => createClient(), [])
 
-    // Use the actual channel UUID, not the URL param
     const { messages, loading, sendMessage } = useMessages(channel?.id || '')
     usePresence()
 
@@ -49,8 +48,7 @@ export default function ChannelPage() {
     }
 
     return (
-
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col h-full overflow-hidden">
             <NotificationPermission />
             <ChannelHeader channel={channel} />
             <MessageList messages={messages} loading={loading} currentUserId={currentUser?.id} />
