@@ -51,7 +51,7 @@ export default function ChannelPage() {
         <div className="flex-1 flex flex-col">
             <ChannelHeader channel={channel} />
             <MessageList messages={messages} loading={loading} currentUserId={currentUser?.id} />
-            <MessageInput onSend={sendMessage} channelName={channel.name} />
+            <MessageInput onSend={sendMessage} channelName={channel.name} channelId={channel.id} />
         </div>
     )
 }

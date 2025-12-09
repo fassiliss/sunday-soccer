@@ -14,6 +14,17 @@ const renderContent = (text: string) => {
 
     return parts.map((part, i) => {
         if (part.match(urlRegex)) {
+            // Check if it's an image URL
+            if (part.match(/\.(jpg|jpeg|png|gif|webp)($|\?)/i)) {
+                return (
+                    <img
+                        key={i}
+                        src={part}
+                        alt="Shared image"
+                        className="max-w-full rounded-lg mt-2 max-h-64 object-contain"
+                    />
+                )
+            }
             return (
                 <a
                     key={i}
