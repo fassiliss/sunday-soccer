@@ -14,6 +14,11 @@ export default async function MainLayout({ children }: { children: React.ReactNo
         .eq('id', user.id)
         .single()
 
+    // Get member count
+    const { count: memberCount } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+
     return (
         <div className="flex flex-col h-screen bg-gray-900">
             {/* Header - Full Width */}
@@ -22,7 +27,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
                     <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-2xl shadow">⚽</div>
                     <div>
                         <span className="font-bold text-white text-xl">Smyrna Soccer</span>
-                        <p className="text-green-200 text-xs">Team Chat</p>
+                        <p className="text-green-200 text-xs">Team Chat • {memberCount || 0} members</p>
                     </div>
                 </div>
                 <nav className="flex items-center gap-6">
