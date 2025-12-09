@@ -7,7 +7,8 @@ import { Profile } from '@/lib/types/database'
 import { createClient } from '@/lib/supabase/client'
 import { useChannels } from '@/lib/hooks'
 import ChannelList from './ChannelList'
-import { Search, Plus, X, Menu, LogOut } from 'lucide-react'
+import ProfileSettings from '../ui/ProfileSettings'
+import { Search, Plus, X, Menu, LogOut, Settings } from 'lucide-react'
 
 interface SidebarProps {
     user: User
@@ -18,6 +19,8 @@ export default function Sidebar({ user, profile }: SidebarProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const [showCreate, setShowCreate] = useState(false)
+    const [showSettings, setShowSettings] = useState(false)
+    const [currentProfile, setCurrentProfile] = useState(profile)
     const [newChannelName, setNewChannelName] = useState('')
     const { channels, loading, createChannel } = useChannels()
     const router = useRouter()
@@ -38,6 +41,11 @@ export default function Sidebar({ user, profile }: SidebarProps) {
     const handleLogout = async () => {
         await supabase.auth.signOut()
         router.push('/auth/login')
+    }
+
+    const refreshProfile = async () => {
+        const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+        if (data) setCurrentProfile(data as Profile)
     }
 
     return (
@@ -89,17 +97,37 @@ export default function Sidebar({ user, profile }: SidebarProps) {
 
                 <div className="p-3 border-t border-gray-700">
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-sm text-white">
-                            {profile?.full_name?.charAt(0) || 'U'}
+                        <div
+                            className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-sm text-white overflow-hidden cursor-pointer"
+                            onClick={() => setShowSettings(true)}
+                        >
+                            {currentProfile?.avatar_url ? (
+                                <img src={currentProfile.avatar_url} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                                currentProfile?.full_name?.charAt(0) || 'U'
+                            )}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium truncate text-white">{profile?.full_name || 'User'}</div>
+                            <div className="text-sm font-medium truncate text-white">{currentProfile?.full_name || 'User'}</div>
                             <div className="text-xs text-gray-400">Online</div>
                         </div>
-                        <button onClick={handleLogout} className="p-1.5 text-gray-400 hover:text-red-400"><LogOut size={16} /></button>
+                        <button onClick={() => setShowSettings(true)} className="p-1.5 text-gray-400 hover:text-white">
+                            <Settings size={16} />
+                        </button>
+                        <button onClick={handleLogout} className="p-1.5 text-gray-400 hover:text-red-400">
+                            <LogOut size={16} />
+                        </button>
                     </div>
                 </div>
             </aside>
+
+            {showSettings && currentProfile && (
+                <ProfileSettings
+                    profile={currentProfile}
+                    onClose={() => setShowSettings(false)}
+                    onUpdate={refreshProfile}
+                />
+            )}
         </>
     )
 }
