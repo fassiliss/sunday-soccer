@@ -119,6 +119,18 @@ export default function Sidebar({ user, profile }: SidebarProps) {
                         </button>
                     </div>
                 </div>
+
+                {/* Footer credit */}
+                <div className="px-3 py-2 border-t border-gray-700">
+                    <a
+                        href="https://www.fassiltsegaye.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-gray-500 hover:text-gray-400"
+                    >
+                        Created by fassiltsegaye.com
+                    </a>
+                </div>
             </aside>
 
             {showSettings && currentProfile && (
