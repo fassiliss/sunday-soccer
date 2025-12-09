@@ -8,6 +8,7 @@ import { Channel, Profile } from '@/lib/types/database'
 import MessageList from '@/components/chat/MessageList'
 import MessageInput from '@/components/chat/MessageInput'
 import ChannelHeader from '@/components/chat/ChannelHeader'
+import NotificationPermission from '@/components/NotificationPermission'
 
 export default function ChannelPage() {
     const params = useParams()
@@ -48,7 +49,9 @@ export default function ChannelPage() {
     }
 
     return (
+
         <div className="flex-1 flex flex-col">
+            <NotificationPermission />
             <ChannelHeader channel={channel} />
             <MessageList messages={messages} loading={loading} currentUserId={currentUser?.id} />
             <MessageInput onSend={sendMessage} channelName={channel.name} channelId={channel.id} />

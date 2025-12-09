@@ -46,7 +46,30 @@ export function useMessages(channelId: string) {
                     .select(`*, user:profiles(*), attachments(*), reactions(*)`)
                     .eq('id', payload.new.id)
                     .single()
-                if (data) setMessages(prev => [...prev, data as MessageWithRelations])
+
+                if (data) {
+                    setMessages(prev => [...prev, data as MessageWithRelations])
+
+                    // Send browser notification
+                    const { data: { user } } = await supabase.auth.getUser()
+                    if (data.user_id !== user?.id) {
+                        const userName = (data as any).user?.full_name || 'Someone'
+                        const content = (data as any).content || 'Sent a message'
+
+                        // Browser notification
+                        if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+                            new Notification(`${userName} - Smyrna Soccer`, {
+                                body: content.substring(0, 100),
+                                icon: '/favicon.ico',
+                            })
+                        }
+
+                        // Play sound
+                        const audio = new Audio('/notification.mp3')
+                        audio.volume = 0.3
+                        audio.play().catch(() => {})
+                    }
+                }
             })
             .on('postgres_changes', {
                 event: '*',

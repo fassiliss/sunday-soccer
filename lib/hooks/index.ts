@@ -1,4 +1,5 @@
-export { useMessages } from './useMessages'
 export { useChannels } from './useChannels'
+export { useMessages } from './useMessages'
 export { useReactions } from './useReactions'
 export { usePresence } from './usePresence'
+export { useNotifications } from './useNotifications'
