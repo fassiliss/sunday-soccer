@@ -33,21 +33,21 @@ export default function SignupPage() {
         }
 
         if (data.user) {
-            await supabase.from('profiles').insert({
+            await (supabase.from('profiles') as any).insert({
                 id: data.user.id,
                 username,
                 full_name: fullName,
                 status: 'online',
             })
 
-            const { data: generalChannel } = await supabase
+            const { data: generalChannel } = await (supabase
                 .from('channels')
                 .select('id')
                 .eq('name', 'general')
-                .single()
+                .single() as any)
 
-            if (generalChannel) {
-                await supabase.from('channel_members').insert({
+            if (generalChannel?.id) {
+                await (supabase.from('channel_members') as any).insert({
                     channel_id: generalChannel.id,
                     user_id: data.user.id,
                     role: 'member',

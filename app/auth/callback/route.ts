@@ -20,25 +20,25 @@ export async function GET(request: Request) {
                 const email = data.user.email || ''
                 const username = email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '')
 
-                await supabase.from('profiles').insert({
+                await (supabase.from('profiles') as any).insert({
                     id: data.user.id,
                     username: username + '_' + Date.now().toString().slice(-4),
                     full_name: data.user.user_metadata?.full_name || username,
-                    avatar_url: data.user.user_metadata?.avatar_url,
-                    status: 'online' as const,
+                    avatar_url: data.user.user_metadata?.avatar_url || null,
+                    status: 'online',
                 })
 
-                const { data: generalChannel } = await supabase
+                const { data: generalChannel } = await (supabase
                     .from('channels')
                     .select('id')
                     .eq('name', 'general')
-                    .single()
+                    .single() as any)
 
-                if (generalChannel) {
-                    await supabase.from('channel_members').insert({
+                if (generalChannel?.id) {
+                    await (supabase.from('channel_members') as any).insert({
                         channel_id: generalChannel.id,
                         user_id: data.user.id,
-                        role: 'member' as const,
+                        role: 'member',
                     })
                 }
             }

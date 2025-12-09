@@ -1,15 +1,20 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { MessageWithRelations } from '@/lib/types/database'
 
 export function useMessages(channelId: string) {
     const [messages, setMessages] = useState<MessageWithRelations[]>([])
     const [loading, setLoading] = useState(true)
-    const supabase = createClient()
+    const supabase = useMemo(() => createClient(), [])
 
     const fetchMessages = useCallback(async () => {
+        if (!channelId) {
+            setLoading(false)
+            return
+        }
+
         setLoading(true)
         const { data } = await supabase
             .from('messages')
@@ -24,6 +29,8 @@ export function useMessages(channelId: string) {
     }, [channelId, supabase])
 
     useEffect(() => {
+        if (!channelId) return
+
         fetchMessages()
 
         const channel = supabase
@@ -52,11 +59,12 @@ export function useMessages(channelId: string) {
     }, [channelId, fetchMessages, supabase])
 
     const sendMessage = async (content: string) => {
+        if (!channelId) return null
+
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return null
 
-        const { data } = await supabase
-            .from('messages')
+        const { data } = await (supabase.from('messages') as any)
             .insert({ channel_id: channelId, user_id: user.id, content, type: 'text' })
             .select()
             .single()

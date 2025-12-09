@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Channel } from '@/lib/types/database'
 
 export function useChannels() {
     const [channels, setChannels] = useState<Channel[]>([])
     const [loading, setLoading] = useState(true)
-    const supabase = createClient()
+    const supabase = useMemo(() => createClient(), [])
 
     const fetchChannels = useCallback(async () => {
         setLoading(true)
@@ -16,7 +16,7 @@ export function useChannels() {
             .select('*')
             .order('name')
 
-        if (data) setChannels(data)
+        if (data) setChannels(data as Channel[])
         setLoading(false)
     }, [supabase])
 
@@ -28,14 +28,13 @@ export function useChannels() {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return null
 
-        const { data: channel } = await supabase
-            .from('channels')
+        const { data: channel } = await (supabase.from('channels') as any)
             .insert({ name, description, type: 'group', is_private: false })
             .select()
             .single()
 
-        if (channel) {
-            await supabase.from('channel_members').insert({
+        if (channel?.id) {
+            await (supabase.from('channel_members') as any).insert({
                 channel_id: channel.id,
                 user_id: user.id,
                 role: 'admin'

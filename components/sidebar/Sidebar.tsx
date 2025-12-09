@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { User } from '@supabase/supabase-js'
 import { Profile } from '@/lib/types/database'
@@ -21,14 +21,14 @@ export default function Sidebar({ user, profile }: SidebarProps) {
     const [newChannelName, setNewChannelName] = useState('')
     const { channels, loading, createChannel } = useChannels()
     const router = useRouter()
-    const supabase = createClient()
+    const supabase = useMemo(() => createClient(), [])
 
     const filteredChannels = channels.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()))
 
     const handleCreate = async () => {
         if (!newChannelName.trim()) return
-        const channel = await createChannel(newChannelName.trim())
-        if (channel) {
+        const channel = await createChannel(newChannelName.trim()) as any
+        if (channel?.id) {
             setNewChannelName('')
             setShowCreate(false)
             router.push(`/channel/${channel.id}`)

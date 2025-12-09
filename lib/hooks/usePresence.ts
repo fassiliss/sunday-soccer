@@ -1,16 +1,16 @@
 'use client'
 
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 export function usePresence() {
-    const supabase = createClient()
+    const supabase = useMemo(() => createClient(), [])
 
     const updatePresence = useCallback(async (status: 'online' | 'offline' | 'away') => {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
 
-        await supabase.from('profiles').update({
+        await (supabase.from('profiles') as any).update({
             status,
             last_seen: new Date().toISOString()
         }).eq('id', user.id)
