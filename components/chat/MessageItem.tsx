@@ -8,6 +8,28 @@ import { createClient } from '@/lib/supabase/client'
 
 const EMOJIS = ['👍', '❤️', '😂', '🔥', '⚽', '🎉']
 
+const renderContent = (text: string) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g
+    const parts = text.split(urlRegex)
+
+    return parts.map((part, i) => {
+        if (part.match(urlRegex)) {
+            return (
+                <a
+                    key={i}
+                    href={part}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:underline"
+                >
+                    {part}
+                </a>
+            )
+        }
+        return part
+    })
+}
+
 export default function MessageItem({ message, isOwn, currentUserId }: { message: MessageWithRelations; isOwn: boolean; currentUserId?: string }) {
     const [showPicker, setShowPicker] = useState(false)
     const [deleted, setDeleted] = useState(false)
@@ -50,7 +72,7 @@ export default function MessageItem({ message, isOwn, currentUserId }: { message
                     <span className="text-xs text-gray-500">{new Date(message.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
                 </div>
                 <div className={`inline-block px-4 py-2 rounded-2xl ${isOwn ? 'bg-blue-600 text-white rounded-tr-md' : 'bg-gray-700 text-white rounded-tl-md'}`}>
-                    <p className="text-sm">{message.content}</p>
+                    <p className="text-sm whitespace-pre-wrap">{renderContent(message.content || '')}</p>
                 </div>
 
                 {Object.keys(groupedReactions).length > 0 && (
