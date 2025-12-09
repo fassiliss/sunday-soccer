@@ -1,0 +1,69 @@
+'use client'
+
+import { useState } from 'react'
+import { MessageWithRelations } from '@/lib/types/database'
+import { useReactions } from '@/lib/hooks'
+import { Smile } from 'lucide-react'
+
+const EMOJIS = ['👍', '❤️', '😂', '🔥', '⚽', '🎉']
+
+export default function MessageItem({ message, isOwn, currentUserId }: { message: MessageWithRelations; isOwn: boolean; currentUserId?: string }) {
+    const [showPicker, setShowPicker] = useState(false)
+    const { toggleReaction } = useReactions()
+    const user = message.user
+    const userName = user?.full_name || user?.username || 'Unknown'
+
+    const groupedReactions = message.reactions.reduce((acc, r) => {
+        if (!acc[r.emoji]) acc[r.emoji] = { count: 0, hasUserReacted: false }
+        acc[r.emoji].count++
+        if (r.user_id === currentUserId) acc[r.emoji].hasUserReacted = true
+        return acc
+    }, {} as Record<string, { count: number; hasUserReacted: boolean }>)
+
+    const handleReaction = async (emoji: string) => {
+        const hasReacted = groupedReactions[emoji]?.hasUserReacted || false
+        await toggleReaction(message.id, emoji, hasReacted)
+        setShowPicker(false)
+    }
+
+    return (
+        <div className={`group flex gap-3 ${isOwn ? 'flex-row-reverse' : ''}`}>
+            <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium shrink-0 ${isOwn ? 'bg-blue-600' : 'bg-gray-600'}`}>
+                {userName.charAt(0).toUpperCase()}
+            </div>
+            <div className={`max-w-lg ${isOwn ? 'text-right' : ''}`}>
+                <div className={`flex items-baseline gap-2 mb-1 ${isOwn ? 'flex-row-reverse' : ''}`}>
+                    <span className="text-sm font-medium text-white">{userName}</span>
+                    <span className="text-xs text-gray-500">{new Date(message.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
+                </div>
+                <div className={`inline-block px-4 py-2 rounded-2xl ${isOwn ? 'bg-blue-600 text-white rounded-tr-md' : 'bg-gray-700 text-white rounded-tl-md'}`}>
+                    <p className="text-sm">{message.content}</p>
+                </div>
+
+                {Object.keys(groupedReactions).length > 0 && (
+                    <div className={`flex flex-wrap gap-1 mt-1 ${isOwn ? 'justify-end' : ''}`}>
+                        {Object.entries(groupedReactions).map(([emoji, data]) => (
+                            <button key={emoji} onClick={() => handleReaction(emoji)}
+                                    className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs ${data.hasUserReacted ? 'bg-blue-600/30 border border-blue-500/50' : 'bg-gray-700'}`}>
+                                <span>{emoji}</span><span className="text-gray-300">{data.count}</span>
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                <div className="relative">
+                    <button onClick={() => setShowPicker(!showPicker)} className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-gray-300 text-xs mt-1">
+                        <Smile size={14} className="inline mr-1" />React
+                    </button>
+                    {showPicker && (
+                        <div className={`absolute z-10 mt-1 bg-gray-700 rounded-lg p-2 flex gap-1 ${isOwn ? 'right-0' : 'left-0'}`}>
+                            {EMOJIS.map(emoji => (
+                                <button key={emoji} onClick={() => handleReaction(emoji)} className="hover:bg-gray-600 p-1 rounded text-lg">{emoji}</button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    )
+}
