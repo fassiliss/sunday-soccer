@@ -41,20 +41,22 @@ export function useMessages(channelId: string) {
                 table: 'messages',
                 filter: `channel_id=eq.${channelId}`
             }, async (payload) => {
-                const { data } = await supabase
+                const { data: messageData } = await supabase
                     .from('messages')
                     .select(`*, user:profiles(*), attachments(*), reactions(*)`)
                     .eq('id', payload.new.id)
                     .single()
 
-                if (data) {
-                    setMessages(prev => [...prev, data as MessageWithRelations])
+                if (messageData) {
+                    setMessages(prev => [...prev, messageData as MessageWithRelations])
 
                     // Send browser notification
                     const { data: { user } } = await supabase.auth.getUser()
-                    if (data.user_id !== user?.id) {
-                        const userName = (data as any).user?.full_name || 'Someone'
-                        const content = (data as any).content || 'Sent a message'
+                    const msg = messageData as any
+
+                    if (msg.user_id !== user?.id) {
+                        const userName = msg.user?.full_name || 'Someone'
+                        const content = msg.content || 'Sent a message'
 
                         // Browser notification
                         if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
