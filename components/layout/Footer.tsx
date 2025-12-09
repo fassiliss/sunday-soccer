@@ -2,7 +2,7 @@
 
 export default function Footer() {
     return (
-        <footer className="h-12 bg-gray-800 border-t border-gray-700 flex items-center justify-center px-4">
+        <footer className="h-20 bg-gray-800 border-t border-gray-700 flex items-center justify-center px-4">
             <p className="text-xs text-gray-500">
                 © {new Date().getFullYear()} Smyrna Soccer. Created by{' '}
                 <a
