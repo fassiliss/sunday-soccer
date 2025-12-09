@@ -44,7 +44,6 @@ export default function MessageItem({ message, isOwn, currentUserId }: { message
 
         return parts.map((part, i) => {
             if (part.match(urlRegex)) {
-                // Check if it's an image URL
                 if (part.match(/\.(jpg|jpeg|png|gif|webp)($|\?)/i)) {
                     return (
                         <img
@@ -104,11 +103,10 @@ export default function MessageItem({ message, isOwn, currentUserId }: { message
                         <button onClick={() => setShowPicker(!showPicker)} className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-gray-300 text-xs mt-1">
                             <Smile size={14} className="inline mr-1" />React
                         </button>
-                        {isOwn && (
-                            <button onClick={handleDelete} className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 text-xs mt-1">
-                                <Trash2 size={14} className="inline mr-1" />Delete
-                            </button>
-                        )}
+                        {/* Delete button for all messages */}
+                        <button onClick={handleDelete} className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 text-xs mt-1">
+                            <Trash2 size={14} className="inline mr-1" />Delete
+                        </button>
                         {showPicker && (
                             <div className={`absolute z-10 mt-6 bg-gray-700 rounded-lg p-2 flex gap-1 ${isOwn ? 'right-0' : 'left-0'}`}>
                                 {EMOJIS.map(emoji => (
