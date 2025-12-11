@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Sidebar from '@/components/sidebar/Sidebar'
+import PushNotification from '@/components/PushNotification'
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
     const supabase = await createClient()
@@ -31,55 +32,56 @@ export default async function MainLayout({ children }: { children: React.ReactNo
                     </div>
                 </div>
                 <nav className="flex items-center gap-3 md:gap-6">
-                    <a
-                        href="https://smyrnasoccer.com"
-                        className="text-xs md:text-sm text-green-100 hover:text-white font-medium"
+                    <PushNotification userId={user.id} />
+               <a
+                    href="https://smyrnasoccer.com"
+                    className="text-xs md:text-sm text-green-100 hover:text-white font-medium"
                     >
-                        Home
-                    </a>
-                    <a
-                        href="https://www.fassiltsegaye.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs md:text-sm text-green-100 hover:text-white font-medium hidden sm:block"
+                    Home
+                </a>
+                 <a
+                href="https://www.fassiltsegaye.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs md:text-sm text-green-100 hover:text-white font-medium hidden sm:block"
+                >
+                About Developer
+            </a>
+        </nav>
+</header>
+
+    {/* Main Content with Sidebar */}
+    <div className="flex flex-1 overflow-hidden">
+        <Sidebar user={user} profile={profile} />
+        <div className="flex-1 flex flex-col overflow-hidden">
+            {/* Chat area - Scrollable */}
+            <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
+
+            {/* Footer - Sticky at bottom */}
+            <footer className="sticky bottom-0 w-full h-10 bg-gray-950 border-t-2 border-gray-700 flex items-center justify-center px-4 shrink-0">
+                <p className="text-xs text-gray-500">
+                    © 2025 Smyrna Soccer • Created by{' '}
+                 <a
+                    href="https://www.fassiltsegaye.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white"
                     >
-                        About Developer
-                    </a>
-                </nav>
-            </header>
-
-            {/* Main Content with Sidebar */}
-            <div className="flex flex-1 overflow-hidden">
-                <Sidebar user={user} profile={profile} />
-                <div className="flex-1 flex flex-col overflow-hidden">
-                    {/* Chat area - Scrollable */}
-                    <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
-
-                    {/* Footer - Sticky at bottom */}
-                    <footer className="sticky bottom-0 w-full h-10 bg-gray-950 border-t-2 border-gray-700 flex items-center justify-center px-4 shrink-0">
-                        <p className="text-xs text-gray-500">
-                            © 2025 Smyrna Soccer • Created by{' '}
-                            <a
-                                href="https://www.fassiltsegaye.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-400 hover:text-white"
-                            >
-                                fassiltsegaye.com
-                            </a>
-                            {' '}•{' '}
-                            <a
-                                href="https://github.com/fassiliss/sunday-soccer"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-400 hover:text-white"
-                            >
-                                GitHub
-                            </a>
-                        </p>
-                    </footer>
-                </div>
-            </div>
-        </div>
-    )
+                    fassiltsegaye.com
+                </a>
+                {' '}•{' '}
+             <a
+                href="https://github.com/fassiliss/sunday-soccer"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white"
+                >
+                GitHub
+            </a>
+        </p>
+    </footer>
+</div>
+</div>
+</div>
+)
 }
