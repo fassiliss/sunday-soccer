@@ -1,6 +1,6 @@
 import { CheckCircle2 } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
-import { site } from "@/lib/site";
+import { SecureClubForm } from "@/components/SecureClubForm";
 
 const expectations = [
   "Players of all experience levels are welcome to reach out.",
@@ -34,36 +34,7 @@ export default function JoinUsPage() {
           </div>
         </div>
 
-        <form className="club-form" action={`mailto:${site.email}`} method="post">
-          <label>
-            Full name
-            <input name="name" type="text" placeholder="Your name" required />
-          </label>
-          <label>
-            Email
-            <input name="email" type="email" placeholder="you@example.com" required />
-          </label>
-          <label>
-            Interest
-            <select name="interest" defaultValue="player">
-              <option value="player">Player</option>
-              <option value="parent">Parent or guardian</option>
-              <option value="volunteer">Volunteer</option>
-              <option value="sponsor">Sponsor</option>
-            </select>
-          </label>
-          <label>
-            Message
-            <textarea
-              name="message"
-              placeholder="Tell us about your soccer background or how you want to help."
-              rows={5}
-            />
-          </label>
-          <button className="primary-button" type="submit">
-            Submit
-          </button>
-        </form>
+        <SecureClubForm kind="join" />
       </section>
     </>
   );

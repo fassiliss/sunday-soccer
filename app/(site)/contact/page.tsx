@@ -1,5 +1,6 @@
 import { Mail, MapPin, Phone } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
+import { SecureClubForm } from "@/components/SecureClubForm";
 import { site } from "@/lib/site";
 
 export default function ContactPage() {
@@ -33,27 +34,7 @@ export default function ContactPage() {
           </ul>
         </div>
 
-        <form className="club-form" action={`mailto:${site.email}`} method="post">
-          <label>
-            Name
-            <input name="name" type="text" placeholder="Your name" required />
-          </label>
-          <label>
-            Email
-            <input name="email" type="email" placeholder="you@example.com" required />
-          </label>
-          <label>
-            Subject
-            <input name="subject" type="text" placeholder="How can we help?" />
-          </label>
-          <label>
-            Message
-            <textarea name="message" placeholder="Write your message" rows={5} />
-          </label>
-          <button className="primary-button" type="submit">
-            Send Message
-          </button>
-        </form>
+        <SecureClubForm kind="contact" />
       </section>
     </>
   );

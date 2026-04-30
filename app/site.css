@@ -566,6 +566,34 @@ textarea {
   resize: vertical;
 }
 
+.form-honeypot {
+  left: -10000px;
+  position: absolute;
+}
+
+.form-status {
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 800;
+  margin: 0;
+  padding: 12px 14px;
+}
+
+.form-status.success {
+  background: rgba(11, 111, 58, 0.1);
+  color: var(--green);
+}
+
+.form-status.error {
+  background: rgba(199, 53, 45, 0.1);
+  color: var(--red);
+}
+
+.club-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+
 .contact-list {
   display: grid;
   gap: 12px;
