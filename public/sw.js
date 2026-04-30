@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smyrna-soccer-v1';
+const CACHE_NAME = 'ethio-unity-v1';
 
 // Install event
 self.addEventListener('install', (event) => {

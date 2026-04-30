@@ -10,11 +10,17 @@ export default function Header() {
                 <span className="font-semibold text-white text-lg">Ethio Unity</span>
             </Link>
             <nav className="flex items-center gap-4">
+                <Link
+                    href="/"
+                    className="text-sm font-semibold text-green-300 hover:text-white"
+                >
+                    Website Home
+                </Link>
                 <a
                     href="https://www.fassiltsegaye.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-gray-400 hover:text-white"
+                    className="hidden text-sm text-gray-400 hover:text-white sm:inline"
                 >
                     About Developer
                 </a>
