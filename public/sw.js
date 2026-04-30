@@ -22,7 +22,7 @@ self.addEventListener('fetch', (event) => {
 // Push notification event
 self.addEventListener('push', (event) => {
     const data = event.data?.json() || {};
-    const title = data.title || 'Smyrna Soccer';
+    const title = data.title || 'EU Soccer';
     const options = {
         body: data.body || 'You have a new notification',
         icon: '/icon-192.png',

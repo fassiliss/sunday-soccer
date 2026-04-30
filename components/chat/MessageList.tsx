@@ -21,8 +21,8 @@ export default function MessageList({ messages, loading, currentUserId }: Messag
 
     if (loading) {
         return (
-            <div className="flex-1 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <div className="flex flex-1 items-center justify-center bg-[#0b1614]">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-300/20 border-b-emerald-300"></div>
             </div>
         )
     }
@@ -30,12 +30,15 @@ export default function MessageList({ messages, loading, currentUserId }: Messag
     return (
         <div
             ref={containerRef}
-            className="flex-1 overflow-y-auto min-h-0 p-4 space-y-4"
-            style={{ maxHeight: 'calc(100vh - 250px)' }}
+            className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-[linear-gradient(180deg,_rgba(11,22,20,0.90),_rgba(15,29,27,0.82))] px-3 py-4 sm:px-5"
         >
             {messages.length === 0 ? (
-                <div className="flex items-center justify-center h-full text-gray-500">
-                    <p>No messages yet. Start the conversation!</p>
+                <div className="flex h-full items-center justify-center px-4 text-center">
+                    <div className="max-w-sm">
+                        <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-[1.4rem] bg-emerald-300 text-3xl text-emerald-950">⚽</div>
+                        <h3 className="text-lg font-black text-white">Start today&apos;s team thread</h3>
+                        <p className="mt-2 text-sm leading-6 text-slate-400">Send who is in, who needs a ride, field updates, and post-game photos.</p>
+                    </div>
                 </div>
             ) : (
                 messages.map((message) => (

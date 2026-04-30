@@ -3,12 +3,32 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Mail, Lock, User, Phone, Loader2, CheckCircle } from 'lucide-react'
+import { Lock, User, Phone, Loader2, CheckCircle } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import { normalizePhone, phoneToAuthEmail } from '@/lib/auth/phoneAuth'
+
+type ChannelId = { id: string }
+type ProfileInsert = {
+    id: string
+    username: string
+    full_name: string
+    phone_number: string
+    status: 'online'
+}
+type ChannelMemberInsert = {
+    channel_id: string
+    user_id: string
+    role: 'member'
+}
+type MessageInsert = {
+    channel_id: string
+    user_id: string
+    content: string
+    type: 'system'
+}
 
 export default function SignupPage() {
-    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [fullName, setFullName] = useState('')
     const [username, setUsername] = useState('')
@@ -23,61 +43,76 @@ export default function SignupPage() {
         setLoading(true)
         setError(null)
 
+        const formattedPhone = normalizePhone(phone)
         const { data, error: signUpError } = await supabase.auth.signUp({
-            email,
+            email: phoneToAuthEmail(formattedPhone),
             password,
-            options: { data: { full_name: fullName, username } },
+            options: { data: { full_name: fullName, username, phone_number: formattedPhone } },
         })
 
         if (signUpError) {
-            setError(signUpError.message)
+            if (signUpError.message.toLowerCase().includes('email signups are disabled')) {
+                setError('Email signups are disabled in Supabase. Turn on Email provider because this app uses a hidden email behind the phone number.')
+            } else {
+                setError(signUpError.message)
+            }
             setLoading(false)
             return
         }
 
         if (data.user) {
             // Create profile
-            await (supabase.from('profiles') as any).insert({
+            const profilesTable = supabase.from('profiles') as unknown as {
+                insert: (values: ProfileInsert) => Promise<unknown>
+            }
+            const channelMembersTable = supabase.from('channel_members') as unknown as {
+                insert: (values: ChannelMemberInsert) => Promise<unknown>
+            }
+            const messagesTable = supabase.from('messages') as unknown as {
+                insert: (values: MessageInsert) => Promise<unknown>
+            }
+
+            await profilesTable.insert({
                 id: data.user.id,
                 username,
                 full_name: fullName,
-                phone_number: phone || null,
+                phone_number: formattedPhone,
                 status: 'online',
             })
 
             // Get general channel
-            const { data: generalChannel } = await (supabase
+            const { data: generalChannel } = await supabase
                 .from('channels')
                 .select('id')
                 .eq('name', 'general')
-                .single() as any)
+                .single() as { data: ChannelId | null }
 
             if (generalChannel?.id) {
                 // Add to general channel
-                await (supabase.from('channel_members') as any).insert({
+                await channelMembersTable.insert({
                     channel_id: generalChannel.id,
                     user_id: data.user.id,
                     role: 'member',
                 })
 
                 // Post welcome message in general channel
-                await (supabase.from('messages') as any).insert({
+                await messagesTable.insert({
                     channel_id: generalChannel.id,
                     user_id: data.user.id,
-                    content: `👋 ${fullName} just joined the team! Welcome to Smyrna Soccer! ⚽`,
+                    content: `👋 ${fullName} just joined the team! Welcome to Ethio Unity! ⚽`,
                     type: 'system',
                 })
             }
 
             // Add to all other channels
-            const { data: allChannels } = await (supabase
+            const { data: allChannels } = await supabase
                 .from('channels')
                 .select('id')
-                .neq('name', 'general') as any)
+                .neq('name', 'general') as { data: ChannelId[] | null }
 
             if (allChannels) {
                 for (const channel of allChannels) {
-                    await (supabase.from('channel_members') as any).insert({
+                    await channelMembersTable.insert({
                         channel_id: channel.id,
                         user_id: data.user.id,
                         role: 'member',
@@ -102,12 +137,12 @@ export default function SignupPage() {
                         </div>
                         <h2 className="text-3xl font-bold text-white">Welcome to the Team! ⚽</h2>
                         <p className="text-gray-400 text-lg">
-                            Thank you for joining <strong className="text-green-400">Smyrna Soccer</strong>, {fullName}!
+                            Thank you for joining <strong className="text-green-400">Ethio Unity</strong>, {fullName}!
                         </p>
                         <div className="bg-gray-800 rounded-lg p-4 text-left">
                             <p className="text-gray-300 text-sm mb-2">✅ Your account has been created</p>
-                            <p className="text-gray-300 text-sm mb-2">✅ You've been added to all team channels</p>
-                            <p className="text-gray-300 text-sm">✅ You're ready to start chatting!</p>
+                            <p className="text-gray-300 text-sm mb-2">✅ You&apos;ve been added to all team channels</p>
+                            <p className="text-gray-300 text-sm">✅ You&apos;re ready to start chatting!</p>
                         </div>
                         <Link
                             href="/auth/login"
@@ -116,7 +151,7 @@ export default function SignupPage() {
                             Sign In Now
                         </Link>
                         <p className="text-gray-500 text-sm">
-                            Check your email if confirmation is required
+                            Check your text messages if phone confirmation is required
                         </p>
                     </div>
                 </main>
@@ -133,7 +168,7 @@ export default function SignupPage() {
                     <div className="text-center">
                         <div className="mx-auto w-16 h-16 bg-green-600 rounded-2xl flex items-center justify-center text-3xl mb-4">⚽</div>
                         <h2 className="text-3xl font-bold text-white">Join the Team</h2>
-                        <p className="mt-2 text-gray-400">Create your Smyrna Soccer account</p>
+                        <p className="mt-2 text-gray-400">Create your account with your phone number</p>
                     </div>
 
                     {error && (
@@ -172,32 +207,20 @@ export default function SignupPage() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Phone Number <span className="text-gray-500">(optional)</span></label>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Phone Number</label>
                             <div className="relative">
                                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
                                 <input
                                     type="tel"
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
+                                    required
+                                    inputMode="tel"
                                     className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="+1 (555) 123-4567"
                                 />
                             </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
-                            <div className="relative">
-                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    placeholder="you@example.com"
-                                />
-                            </div>
+                            <p className="text-gray-500 text-xs mt-1">Use country code, for example +1 for US numbers.</p>
                         </div>
 
                         <div>
@@ -222,7 +245,7 @@ export default function SignupPage() {
                             disabled={loading}
                             className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2"
                         >
-                            {loading ? <><Loader2 className="animate-spin" size={20} /> Creating account...</> : 'Join Smyrna Soccer ⚽'}
+                            {loading ? <><Loader2 className="animate-spin" size={20} /> Creating account...</> : 'Join EU Soccer ⚽'}
                         </button>
                     </form>
 

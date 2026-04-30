@@ -1,7 +1,7 @@
 {
-  "name": "Smyrna Soccer",
-  "short_name": "Smyrna Soccer",
-  "description": "Team chat and coordination for Smyrna Soccer",
+  "name": "Ethio Unity",
+  "short_name": "EU Soccer",
+  "description": "Mobile team texting, game-day updates, rides, photos, and soccer coordination for Ethio Unity soccer.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",

@@ -16,18 +16,20 @@ export default function ChannelList({ channels, loading, onChannelClick }: Chann
     const currentChannelId = params.id as string
 
     if (loading) {
-        return <div className="space-y-1">{[1,2,3].map(i => <div key={i} className="animate-pulse h-8 bg-gray-700 rounded" />)}</div>
+        return <div className="space-y-2">{[1,2,3].map(i => <div key={i} className="h-11 animate-pulse rounded-2xl bg-white/10" />)}</div>
     }
 
     return (
-        <div className="space-y-0.5">
+        <div className="space-y-1.5">
             {channels.map(channel => {
                 const isActive = currentChannelId === channel.id || currentChannelId === channel.name
                 return (
                     <Link key={channel.id} href={`/channel/${channel.id}`} onClick={onChannelClick}
-                          className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-sm ${isActive ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700/50'}`}>
-                        <Hash size={16} />
-                        <span>{channel.name}</span>
+                          className={`flex min-h-11 items-center gap-3 rounded-2xl px-3 py-2 text-sm transition ${isActive ? 'bg-emerald-300 text-emerald-950 shadow-lg shadow-emerald-950/20' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}>
+                        <span className={`grid h-8 w-8 place-items-center rounded-full ${isActive ? 'bg-emerald-950/10' : 'bg-white/8'}`}>
+                            <Hash size={15} />
+                        </span>
+                        <span className="truncate font-semibold">{channel.name}</span>
                     </Link>
                 )
             })}

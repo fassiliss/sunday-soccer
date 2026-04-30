@@ -32,7 +32,13 @@ export default function MessageItem({ message, isOwn, currentUserId }: { message
 
     const handleDelete = async () => {
         if (!confirm('Delete this message?')) return
-        await (supabase.from('messages') as any)
+        const messagesTable = supabase.from('messages') as unknown as {
+            update: (values: { is_deleted: boolean }) => {
+                eq: (column: string, value: string) => Promise<unknown>
+            }
+        }
+
+        await messagesTable
             .update({ is_deleted: true })
             .eq('id', message.id)
         setDeleted(true)
@@ -75,42 +81,42 @@ export default function MessageItem({ message, isOwn, currentUserId }: { message
 
     return (
         <>
-            <div className={`group flex gap-3 ${isOwn ? 'flex-row-reverse' : ''}`}>
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium shrink-0 ${isOwn ? 'bg-blue-600' : 'bg-gray-600'}`}>
+            <div className={`group flex gap-2.5 ${isOwn ? 'flex-row-reverse' : ''}`}>
+                <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white shadow-lg ${isOwn ? 'bg-cyan-500 shadow-cyan-950/20' : 'bg-emerald-500 shadow-emerald-950/20'}`}>
                     {userName.charAt(0).toUpperCase()}
                 </div>
-                <div className={`max-w-lg ${isOwn ? 'text-right' : ''}`}>
-                    <div className={`flex items-baseline gap-2 mb-1 ${isOwn ? 'flex-row-reverse' : ''}`}>
-                        <span className="text-sm font-medium text-white">{userName}</span>
-                        <span className="text-xs text-gray-500">{new Date(message.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
+                <div className={`max-w-[82%] sm:max-w-lg ${isOwn ? 'text-right' : ''}`}>
+                    <div className={`mb-1 flex items-baseline gap-2 ${isOwn ? 'flex-row-reverse' : ''}`}>
+                        <span className="truncate text-sm font-bold text-white">{userName}</span>
+                        <span className="shrink-0 text-xs text-slate-500">{new Date(message.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
                     </div>
-                    <div className={`inline-block px-4 py-2 rounded-2xl ${isOwn ? 'bg-blue-600 text-white rounded-tr-md' : 'bg-gray-700 text-white rounded-tl-md'}`}>
-                        <p className="text-sm whitespace-pre-wrap">{renderContent(message.content || '')}</p>
+                    <div className={`inline-block rounded-[1.35rem] px-4 py-2.5 shadow-lg ${isOwn ? 'rounded-tr-md bg-cyan-500 text-white shadow-cyan-950/20' : 'rounded-tl-md border border-white/10 bg-white/10 text-white shadow-black/10'}`}>
+                        <p className="whitespace-pre-wrap break-words text-[15px] leading-6">{renderContent(message.content || '')}</p>
                     </div>
 
                     {Object.keys(groupedReactions).length > 0 && (
-                        <div className={`flex flex-wrap gap-1 mt-1 ${isOwn ? 'justify-end' : ''}`}>
+                        <div className={`mt-1.5 flex flex-wrap gap-1 ${isOwn ? 'justify-end' : ''}`}>
                             {Object.entries(groupedReactions).map(([emoji, data]) => (
                                 <button key={emoji} onClick={() => handleReaction(emoji)}
-                                        className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs ${data.hasUserReacted ? 'bg-blue-600/30 border border-blue-500/50' : 'bg-gray-700'}`}>
-                                    <span>{emoji}</span><span className="text-gray-300">{data.count}</span>
+                                        className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${data.hasUserReacted ? 'border border-cyan-300/50 bg-cyan-300/20' : 'bg-white/10'}`}>
+                                    <span>{emoji}</span><span className="text-slate-300">{data.count}</span>
                                 </button>
                             ))}
                         </div>
                     )}
 
                     <div className={`relative flex gap-2 ${isOwn ? 'justify-end' : ''}`}>
-                        <button onClick={() => setShowPicker(!showPicker)} className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-gray-300 text-xs mt-1">
+                        <button onClick={() => setShowPicker(!showPicker)} className="mt-1 text-xs font-semibold text-slate-500 opacity-100 hover:text-slate-300 sm:opacity-0 sm:group-hover:opacity-100">
                             <Smile size={14} className="inline mr-1" />React
                         </button>
                         {/* Delete button for all messages */}
-                        <button onClick={handleDelete} className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 text-xs mt-1">
+                        <button onClick={handleDelete} className="mt-1 text-xs font-semibold text-slate-500 opacity-100 hover:text-red-300 sm:opacity-0 sm:group-hover:opacity-100">
                             <Trash2 size={14} className="inline mr-1" />Delete
                         </button>
                         {showPicker && (
-                            <div className={`absolute z-10 mt-6 bg-gray-700 rounded-lg p-2 flex gap-1 ${isOwn ? 'right-0' : 'left-0'}`}>
+                            <div className={`absolute z-10 mt-7 flex gap-1 rounded-2xl border border-white/10 bg-[#111827] p-2 shadow-xl ${isOwn ? 'right-0' : 'left-0'}`}>
                                 {EMOJIS.map(emoji => (
-                                    <button key={emoji} onClick={() => handleReaction(emoji)} className="hover:bg-gray-600 p-1 rounded text-lg">{emoji}</button>
+                                    <button key={emoji} onClick={() => handleReaction(emoji)} className="rounded-xl p-1 text-lg hover:bg-white/10">{emoji}</button>
                                 ))}
                             </div>
                         )}

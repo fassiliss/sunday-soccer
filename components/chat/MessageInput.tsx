@@ -1,11 +1,13 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Send, Image, Smile, X } from 'lucide-react'
+import { Send, Image as ImageIcon, Smile, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
+const QUICK_MESSAGES = ["I'm in", 'Running late', 'Need a ride', 'Need a sub', 'Who has jerseys?']
+
 interface MessageInputProps {
-    onSend: (content: string) => Promise<any>
+    onSend: (content: string) => Promise<unknown>
     channelName: string
     channelId: string
 }
@@ -37,6 +39,17 @@ export default function MessageInput({ onSend, channelName, channelId }: Message
         setSelectedFile(null)
         setPreview(null)
         if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+
+    const handleQuickSend = async (content: string) => {
+        if (sending) return
+        setSending(true)
+        try {
+            await onSend(content)
+        } catch (error) {
+            console.error('Error sending quick message:', error)
+        }
+        setSending(false)
     }
 
     const handleSend = async () => {
@@ -83,28 +96,42 @@ export default function MessageInput({ onSend, channelName, channelId }: Message
     }
 
     return (
-        <div className="p-2 sm:p-4 border-t border-gray-700 bg-gray-800 shrink-0">
+        <div className="shrink-0 border-t border-white/10 bg-[#08110f]/95 px-3 pb-[calc(env(safe-area-inset-bottom)+12px)] pt-3 backdrop-blur-xl sm:px-5 sm:pb-4">
             {/* File Preview */}
             {selectedFile && (
-                <div className="mb-2 p-2 bg-gray-700 rounded-lg flex items-center gap-2">
+                <div className="mb-3 flex items-center gap-2 rounded-2xl border border-white/10 bg-white/8 p-2">
                     {preview ? (
-                        <img src={preview} alt="Preview" className="w-12 h-12 object-cover rounded" />
+                        <img src={preview} alt="Preview" className="h-12 w-12 rounded-xl object-cover" />
                     ) : (
-                        <div className="w-12 h-12 bg-gray-600 rounded flex items-center justify-center">
-                            <Image size={20} className="text-gray-400" />
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10">
+                            <ImageIcon size={20} className="text-slate-400" />
                         </div>
                     )}
                     <div className="flex-1 min-w-0">
                         <p className="text-xs text-white truncate">{selectedFile.name}</p>
-                        <p className="text-xs text-gray-400">{(selectedFile.size / 1024).toFixed(1)} KB</p>
+                        <p className="text-xs text-slate-400">{(selectedFile.size / 1024).toFixed(1)} KB</p>
                     </div>
-                    <button onClick={clearFile} className="text-gray-400 hover:text-red-400 shrink-0">
+                    <button onClick={clearFile} className="shrink-0 rounded-full p-2 text-slate-400 hover:bg-red-500/10 hover:text-red-300" aria-label="Remove attachment">
                         <X size={18} />
                     </button>
                 </div>
             )}
 
-            <div className="flex items-center gap-1 sm:gap-2 bg-gray-700 rounded-xl px-2 sm:px-3 py-2">
+            <div className="no-scrollbar mb-3 flex gap-2 overflow-x-auto">
+                {QUICK_MESSAGES.map((quick) => (
+                    <button
+                        key={quick}
+                        type="button"
+                        onClick={() => handleQuickSend(quick)}
+                        disabled={sending}
+                        className="shrink-0 rounded-full border border-white/10 bg-white/8 px-3 py-2 text-xs font-bold text-slate-100 transition hover:bg-white/12 disabled:opacity-50"
+                    >
+                        {quick}
+                    </button>
+                ))}
+            </div>
+
+            <div className="flex items-center gap-2 rounded-[1.4rem] border border-white/10 bg-white px-2 py-2 shadow-xl shadow-black/20 sm:px-3">
                 <input
                     ref={fileInputRef}
                     type="file"
@@ -114,9 +141,10 @@ export default function MessageInput({ onSend, channelName, channelId }: Message
                 />
                 <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="text-gray-400 hover:text-white p-1 shrink-0"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+                    aria-label="Attach image"
                 >
-                    <Image size={18} />
+                    <ImageIcon size={19} />
                 </button>
                 <input
                     type="text"
@@ -124,15 +152,16 @@ export default function MessageInput({ onSend, channelName, channelId }: Message
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                     placeholder={`Message #${channelName}`}
-                    className="flex-1 min-w-0 bg-transparent outline-none text-sm placeholder-gray-400 text-white"
+                    className="min-w-0 flex-1 bg-transparent text-[16px] text-slate-950 outline-none placeholder:text-slate-400 sm:text-sm"
                 />
-                <button className="text-gray-400 hover:text-white p-1 shrink-0 hidden sm:block">
+                <button className="hidden h-10 w-10 shrink-0 place-items-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 sm:grid" aria-label="Add reaction">
                     <Smile size={18} />
                 </button>
                 <button
                     onClick={handleSend}
                     disabled={sending || (!message.trim() && !selectedFile)}
-                    className="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-lg p-2 text-white shrink-0"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-emerald-400 text-emerald-950 transition hover:bg-emerald-300 disabled:opacity-40"
+                    aria-label="Send message"
                 >
                     <Send size={16} />
                 </button>

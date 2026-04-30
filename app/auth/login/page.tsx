@@ -4,12 +4,13 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Mail, Lock, Loader2 } from 'lucide-react'
+import { Lock, Loader2, Phone } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import { phoneToAuthEmail } from '@/lib/auth/phoneAuth'
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('')
+    const [phone, setPhone] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -21,10 +22,17 @@ export default function LoginPage() {
         setLoading(true)
         setError(null)
 
-        const { data, error: loginError } = await supabase.auth.signInWithPassword({ email, password })
+        const { data, error: loginError } = await supabase.auth.signInWithPassword({
+            email: phoneToAuthEmail(phone),
+            password,
+        })
 
         if (loginError) {
-            setError(loginError.message)
+            if (loginError.message.toLowerCase().includes('email not confirmed')) {
+                setError('This account is waiting for email confirmation. Turn off email confirmations in Supabase Auth settings for phone-number login.')
+            } else {
+                setError(loginError.message)
+            }
             setLoading(false)
             return
         }
@@ -58,8 +66,8 @@ export default function LoginPage() {
                 <div className="max-w-md w-full space-y-8">
                     <div className="text-center">
                         <div className="mx-auto w-16 h-16 bg-green-600 rounded-2xl flex items-center justify-center text-3xl mb-4">⚽</div>
-                        <h2 className="text-3xl font-bold text-white">Smyrna Soccer</h2>
-                        <p className="mt-2 text-gray-400">Sign in to your team chat</p>
+                        <h2 className="text-3xl font-bold text-white">Ethio Unity</h2>
+                        <p className="mt-2 text-gray-400">Sign in with your phone number</p>
                     </div>
 
                     {error && (
@@ -68,16 +76,17 @@ export default function LoginPage() {
 
                     <form onSubmit={handleLogin} className="space-y-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Phone Number</label>
                             <div className="relative">
-                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+                                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
                                 <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    type="tel"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
                                     required
+                                    inputMode="tel"
                                     className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    placeholder="you@example.com"
+                                    placeholder="+1 (555) 123-4567"
                                 />
                             </div>
                         </div>
@@ -107,7 +116,7 @@ export default function LoginPage() {
                     </form>
 
                     <p className="text-center text-gray-400">
-                        Don't have an account? <Link href="/auth/signup" className="text-blue-400 hover:text-blue-300">Sign up</Link>
+                        Don&apos;t have an account? <Link href="/auth/signup" className="text-blue-400 hover:text-blue-300">Sign up</Link>
                     </p>
                 </div>
             </main>

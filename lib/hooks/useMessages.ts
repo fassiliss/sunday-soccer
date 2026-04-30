@@ -60,7 +60,7 @@ export function useMessages(channelId: string) {
 
                         // Browser notification
                         if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
-                            new Notification(`${userName} - Smyrna Soccer`, {
+                            new Notification(`${userName} - EU Soccer`, {
                                 body: content.substring(0, 100),
                                 icon: '/favicon.ico',
                             })

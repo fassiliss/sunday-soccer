@@ -13,13 +13,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Smyrna Soccer",
-  description: "Team chat and coordination for Smyrna Soccer",
+  title: "Ethio Unity",
+  description: "Mobile team texting, game-day updates, rides, photos, and soccer coordination for Ethio Unity soccer.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Smyrna Soccer",
+    title: "EU Soccer",
   },
 };
 

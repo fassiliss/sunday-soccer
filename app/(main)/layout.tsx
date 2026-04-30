@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Sidebar from '@/components/sidebar/Sidebar'
 import PushNotification from '@/components/PushNotification'
+import { Bell, CalendarDays, Home, ShieldCheck } from 'lucide-react'
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
     const supabase = await createClient()
@@ -21,67 +22,60 @@ export default async function MainLayout({ children }: { children: React.ReactNo
         .select('*', { count: 'exact', head: true })
 
     return (
-        <div className="h-screen flex flex-col bg-gray-900 overflow-hidden">
-            {/* Header - Sticky */}
-            <header className="sticky top-0 z-50 w-full h-16 bg-gradient-to-r from-green-700 to-green-600 border-b border-green-500 flex items-center justify-between px-4 md:px-6 shrink-0 shadow-lg">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-2xl shadow">⚽</div>
-                    <div>
-                        <span className="font-bold text-white text-lg md:text-xl">Smyrna Soccer</span>
-                        <p className="text-green-200 text-xs">Team Chat • {memberCount || 0} members</p>
-                    </div>
+        <div className="app-shell h-dvh overflow-hidden bg-[#07130f] text-white">
+            <div className="flex h-full overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(27,185,119,0.20),_transparent_34%),linear-gradient(135deg,_#07130f_0%,_#0f1d1b_52%,_#111827_100%)]">
+                <Sidebar user={user} profile={profile} />
+
+                <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+                    <header className="shrink-0 border-b border-white/10 bg-[#07130f]/90 px-4 pb-3 pt-[calc(env(safe-area-inset-top)+12px)] backdrop-blur-xl md:px-6 md:pt-4">
+                        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3">
+                            <div className="flex min-w-0 items-center gap-3">
+                                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-2xl shadow-lg shadow-emerald-950/40">⚽</div>
+                                <div className="min-w-0">
+                                    <p className="truncate text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-300">Matchday mobile</p>
+                                    <h1 className="truncate text-lg font-black leading-tight text-white md:text-xl">Ethio Unity</h1>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <div className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-emerald-100 sm:flex">
+                                    <ShieldCheck size={15} />
+                                    <span>{memberCount || 0} players</span>
+                                </div>
+                                <PushNotification userId={user.id} />
+                                <a
+                                    href="https://smyrnasoccer.com"
+                                    aria-label="Ethio Unity home"
+                                    className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-emerald-100 transition hover:bg-white/10"
+                                >
+                                    <Home size={18} />
+                                </a>
+                            </div>
+                        </div>
+
+                        <div className="mx-auto mt-3 grid w-full max-w-6xl grid-cols-[1fr_auto] items-center gap-2 rounded-[1.25rem] border border-emerald-300/20 bg-emerald-400/10 p-2 shadow-lg shadow-emerald-950/20">
+                            <div className="flex min-w-0 items-center gap-3 px-2">
+                                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-emerald-300 text-emerald-950">
+                                    <CalendarDays size={18} />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="truncate text-sm font-bold text-white">Today&apos;s team thread</p>
+                                    <p className="truncate text-xs text-emerald-100/80">Lineups, rides, lateness, photos, and final score.</p>
+                                </div>
+                            </div>
+                            <div className="grid h-9 w-9 place-items-center rounded-full bg-lime-300 text-lime-950">
+                                <Bell size={17} />
+                            </div>
+                        </div>
+                    </header>
+
+                    <main className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col overflow-hidden md:px-4 md:py-4">
+                        <div className="flex min-h-0 flex-1 overflow-hidden bg-[#0b1614]/72 shadow-2xl shadow-black/20 md:rounded-[1.75rem] md:border md:border-white/10">
+                            {children}
+                        </div>
+                    </main>
                 </div>
-                <nav className="flex items-center gap-3 md:gap-6">
-                    <PushNotification userId={user.id} />
-               <a
-                    href="https://smyrnasoccer.com"
-                    className="text-xs md:text-sm text-green-100 hover:text-white font-medium"
-                    >
-                    Home
-                </a>
-                 <a
-                href="https://www.fassiltsegaye.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs md:text-sm text-green-100 hover:text-white font-medium hidden sm:block"
-                >
-                About Developer
-            </a>
-        </nav>
-</header>
-
-    {/* Main Content with Sidebar */}
-    <div className="flex flex-1 overflow-hidden">
-        <Sidebar user={user} profile={profile} />
-        <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Chat area - Scrollable */}
-            <main className="flex-1 flex flex-col overflow-hidden">{children}</main>
-
-            {/* Footer - Sticky at bottom */}
-            <footer className="sticky bottom-0 w-full h-10 bg-gray-950 border-t-2 border-gray-700 flex items-center justify-center px-4 shrink-0">
-                <p className="text-xs text-gray-500">
-                    © 2025 Smyrna Soccer • Created by{' '}
-                 <a
-                    href="https://www.fassiltsegaye.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-white"
-                    >
-                    fassiltsegaye.com
-                </a>
-                {' '}•{' '}
-             <a
-                href="https://github.com/fassiliss/sunday-soccer"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white"
-                >
-                GitHub
-            </a>
-        </p>
-    </footer>
-</div>
-</div>
-</div>
-)
+            </div>
+        </div>
+    )
 }
