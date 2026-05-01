@@ -57,6 +57,9 @@ export function Header() {
               {item.label}
             </Link>
           ))}
+          <Link href="/chat" onClick={() => setOpen(false)}>
+            Team Chat
+          </Link>
         </nav>
       ) : null}
     </header>
