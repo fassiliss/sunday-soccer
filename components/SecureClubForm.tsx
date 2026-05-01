@@ -16,6 +16,8 @@ const interests = [
     { value: 'sponsor', label: 'Sponsor' },
 ]
 
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 export function SecureClubForm({ kind }: SecureClubFormProps) {
     const [state, setState] = useState<SubmitState>('idle')
     const [message, setMessage] = useState('')
@@ -31,12 +33,30 @@ export function SecureClubForm({ kind }: SecureClubFormProps) {
         const formData = new FormData(form)
         const payload = {
             kind,
-            name: String(formData.get('name') || ''),
-            email: String(formData.get('email') || ''),
-            subject: String(formData.get('subject') || ''),
-            interest: String(formData.get('interest') || ''),
-            message: String(formData.get('message') || ''),
-            website: String(formData.get('website') || ''),
+            name: String(formData.get('name') || '').trim(),
+            email: String(formData.get('email') || '').trim().toLowerCase(),
+            subject: String(formData.get('subject') || '').trim(),
+            interest: String(formData.get('interest') || '').trim(),
+            message: String(formData.get('message') || '').trim(),
+            website: String(formData.get('website') || '').trim(),
+        }
+
+        if (payload.name.length < 2) {
+            setState('error')
+            setMessage('Please enter your name.')
+            return
+        }
+
+        if (!emailPattern.test(payload.email)) {
+            setState('error')
+            setMessage('Please enter a valid email address.')
+            return
+        }
+
+        if (payload.message.length < 5) {
+            setState('error')
+            setMessage('Please enter a longer message.')
+            return
         }
 
         const controller = new AbortController()
@@ -48,10 +68,13 @@ export function SecureClubForm({ kind }: SecureClubFormProps) {
             setState('success')
             setMessage(messageText)
         }
+        const optimisticTimeoutId = window.setTimeout(() => {
+            showSuccess()
+        }, 3_000)
         const safetyTimeoutId = window.setTimeout(() => {
             showSuccess()
             controller.abort()
-        }, 8_000)
+        }, 10_000)
 
         try {
             const response = await fetch('/api/inquiries', {
@@ -63,6 +86,7 @@ export function SecureClubForm({ kind }: SecureClubFormProps) {
                 body: JSON.stringify(payload),
             })
             const responseText = await response.text()
+            window.clearTimeout(optimisticTimeoutId)
             window.clearTimeout(safetyTimeoutId)
 
             if (finished) return
@@ -86,6 +110,7 @@ export function SecureClubForm({ kind }: SecureClubFormProps) {
 
             showSuccess(result.message || 'Thanks. Your message was sent.')
         } catch {
+            window.clearTimeout(optimisticTimeoutId)
             window.clearTimeout(safetyTimeoutId)
             showSuccess()
         }
