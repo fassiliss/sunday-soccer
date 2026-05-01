@@ -38,19 +38,19 @@ export const members = [
     name: "Mikael Girma",
     role: "Defender",
     number: "4",
-    image: "/nitro/img/inner/team/team04.jpg",
+    image: "/team-member-classic-team.png",
   },
   {
     name: "Yonatan Haile",
     role: "Goalkeeper",
     number: "1",
-    image: "/nitro/img/inner/team/team05.jpg",
+    image: "/team-member-field-play.png",
   },
   {
     name: "Robel Tadesse",
     role: "Coach",
     number: "FC",
-    image: "/nitro/img/inner/team/team06.jpg",
+    image: "/team-member-small-goal.png",
   },
 ];
 
