@@ -51,6 +51,15 @@ export default function RootLayout({
             __html: `
               if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
+                  const publicSitePaths = ['/', '/about', '/contact', '/join-us', '/team-members'];
+                  const isPublicSitePath = publicSitePaths.includes(window.location.pathname);
+
+                  if (isPublicSitePath) {
+                    navigator.serviceWorker.getRegistrations()
+                      .then((registrations) => registrations.forEach((registration) => registration.unregister()));
+                    return;
+                  }
+
                   navigator.serviceWorker.register('/sw.js');
                 });
               }
