@@ -42,13 +42,18 @@ export function SecureClubForm({ kind }: SecureClubFormProps) {
             const response = await fetch('/api/inquiries', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                cache: 'no-store',
+                credentials: 'same-origin',
                 body: JSON.stringify(payload),
             })
-            const result = await response.json() as { message?: string }
+            const contentType = response.headers.get('content-type') || ''
+            const result = contentType.includes('application/json')
+                ? await response.json() as { message?: string }
+                : { message: await response.text() }
 
             if (!response.ok) {
                 setState('error')
-                setMessage(result.message || 'Please check the form and try again.')
+                setMessage(result.message?.trim() || 'Please check the form and try again.')
                 return
             }
 
