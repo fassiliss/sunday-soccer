@@ -1,7 +1,7 @@
 export const site = {
   name: "Ethio Unity",
   domain: "ethiounity.com",
-  email: "info@ethiounity.com",
+  email: "ethiounitysmyrna@gmail.com",
   phone: "+1 (000) 000-0000",
   location: "United States",
   founded: "Community soccer club",

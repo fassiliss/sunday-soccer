@@ -567,8 +567,7 @@ textarea {
 }
 
 .form-honeypot {
-  left: -10000px;
-  position: absolute;
+  display: none;
 }
 
 .form-status {

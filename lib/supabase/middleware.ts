@@ -1,6 +1,15 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+const publicPaths = new Set([
+    '/',
+    '/about',
+    '/contact',
+    '/join-us',
+    '/team-members',
+    '/api/inquiries',
+])
+
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({ request })
 
@@ -25,7 +34,9 @@ export async function updateSession(request: NextRequest) {
 
     const { data: { user } } = await supabase.auth.getUser()
 
-    if (!user && !request.nextUrl.pathname.startsWith('/auth') && request.nextUrl.pathname !== '/') {
+    const isPublicPath = publicPaths.has(request.nextUrl.pathname)
+
+    if (!user && !request.nextUrl.pathname.startsWith('/auth') && !isPublicPath) {
         const url = request.nextUrl.clone()
         url.pathname = '/auth/login'
         return NextResponse.redirect(url)

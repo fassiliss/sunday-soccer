@@ -100,10 +100,12 @@ export function SecureClubForm({ kind }: SecureClubFormProps) {
                 />
             </label>
 
-            <label className="form-honeypot" aria-hidden="true">
-                Website
-                <input name="website" type="text" tabIndex={-1} autoComplete="off" />
-            </label>
+            <div className="form-honeypot" aria-hidden="true">
+                <label>
+                    Website
+                    <input name="website" type="text" tabIndex={-1} autoComplete="off" />
+                </label>
+            </div>
 
             {message ? (
                 <p className={`form-status ${state === 'success' ? 'success' : 'error'}`} role="status">
