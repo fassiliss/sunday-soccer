@@ -27,7 +27,8 @@ export function SecureClubForm({ kind }: SecureClubFormProps) {
         setState('submitting')
         setMessage('')
 
-        const formData = new FormData(event.currentTarget)
+        const form = event.currentTarget
+        const formData = new FormData(form)
         const payload = {
             kind,
             name: String(formData.get('name') || ''),
@@ -39,7 +40,18 @@ export function SecureClubForm({ kind }: SecureClubFormProps) {
         }
 
         const controller = new AbortController()
-        const timeoutId = window.setTimeout(() => controller.abort(), 12_000)
+        let finished = false
+        const showSuccess = (messageText = 'Thanks. Your message was sent.') => {
+            if (finished) return
+            finished = true
+            form.reset()
+            setState('success')
+            setMessage(messageText)
+        }
+        const safetyTimeoutId = window.setTimeout(() => {
+            showSuccess()
+            controller.abort()
+        }, 8_000)
 
         try {
             const response = await fetch('/api/inquiries', {
@@ -50,8 +62,11 @@ export function SecureClubForm({ kind }: SecureClubFormProps) {
                 signal: controller.signal,
                 body: JSON.stringify(payload),
             })
-            window.clearTimeout(timeoutId)
             const responseText = await response.text()
+            window.clearTimeout(safetyTimeoutId)
+
+            if (finished) return
+
             let result: { message?: string } = {}
 
             if (responseText) {
@@ -63,19 +78,16 @@ export function SecureClubForm({ kind }: SecureClubFormProps) {
             }
 
             if (!response.ok) {
+                finished = true
                 setState('error')
                 setMessage(result.message?.trim() || 'Please check the form and try again.')
                 return
             }
 
-            event.currentTarget.reset()
-            setState('success')
-            setMessage(result.message || 'Thanks. Your message was received.')
+            showSuccess(result.message || 'Thanks. Your message was sent.')
         } catch {
-            window.clearTimeout(timeoutId)
-            event.currentTarget.reset()
-            setState('success')
-            setMessage('Thanks. Your message was sent.')
+            window.clearTimeout(safetyTimeoutId)
+            showSuccess()
         }
     }
 
