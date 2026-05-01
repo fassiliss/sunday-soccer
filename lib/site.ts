@@ -20,19 +20,19 @@ export const members = [
     name: "Samuel Bekele",
     role: "Captain",
     number: "10",
-    image: "/nitro/img/inner/team/team01.jpg",
+    image: "/team-member-player.png",
   },
   {
     name: "Dawit Tesfaye",
     role: "Forward",
     number: "9",
-    image: "/nitro/img/inner/team/team02.jpg",
+    image: "/team-member-night-practice.png",
   },
   {
     name: "Nahom Alemu",
     role: "Midfielder",
     number: "8",
-    image: "/nitro/img/inner/team/team03.jpg",
+    image: "/team-member-group.png",
   },
   {
     name: "Mikael Girma",
