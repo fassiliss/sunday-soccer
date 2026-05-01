@@ -46,10 +46,16 @@ export function SecureClubForm({ kind }: SecureClubFormProps) {
                 credentials: 'same-origin',
                 body: JSON.stringify(payload),
             })
-            const contentType = response.headers.get('content-type') || ''
-            const result = contentType.includes('application/json')
-                ? await response.json() as { message?: string }
-                : { message: await response.text() }
+            const responseText = await response.text()
+            let result: { message?: string } = {}
+
+            if (responseText) {
+                try {
+                    result = JSON.parse(responseText) as { message?: string }
+                } catch {
+                    result = { message: responseText }
+                }
+            }
 
             if (!response.ok) {
                 setState('error')
@@ -62,7 +68,7 @@ export function SecureClubForm({ kind }: SecureClubFormProps) {
             setMessage(result.message || 'Thanks. Your message was received.')
         } catch {
             setState('error')
-            setMessage('The form could not be sent right now. Please try again.')
+            setMessage('Please check your email. If the message arrived, the form was sent.')
         }
     }
 
