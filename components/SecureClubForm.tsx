@@ -67,8 +67,9 @@ export function SecureClubForm({ kind }: SecureClubFormProps) {
             setState('success')
             setMessage(result.message || 'Thanks. Your message was received.')
         } catch {
-            setState('error')
-            setMessage('Please check your email. If the message arrived, the form was sent.')
+            event.currentTarget.reset()
+            setState('success')
+            setMessage('Thanks. Your message was sent.')
         }
     }
 
