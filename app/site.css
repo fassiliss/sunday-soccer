@@ -437,11 +437,22 @@ textarea {
 .player-image {
   aspect-ratio: 1.08 / 1;
   background: #d8ded8;
+  border: 0;
+  cursor: zoom-in;
+  display: block;
+  padding: 0;
   position: relative;
+  width: 100%;
 }
 
 .player-image img {
   object-fit: cover;
+  transition: transform 180ms ease;
+}
+
+.player-image:hover img,
+.player-image:focus-visible img {
+  transform: scale(1.04);
 }
 
 .player-image span {
@@ -469,6 +480,52 @@ textarea {
 
 .player-body p {
   margin: 6px 0 0;
+}
+
+.photo-lightbox {
+  align-items: center;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 80;
+}
+
+.photo-lightbox-backdrop {
+  background: rgba(16, 19, 21, 0.78);
+  border: 0;
+  cursor: zoom-out;
+  inset: 0;
+  position: absolute;
+}
+
+.photo-lightbox-panel {
+  max-width: min(980px, 94vw);
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.photo-lightbox-close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 2;
+}
+
+.photo-lightbox-image {
+  aspect-ratio: 1 / 1;
+  background: #111;
+  border: 4px solid var(--white);
+  border-radius: var(--radius);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.34);
+  overflow: hidden;
+  position: relative;
+}
+
+.photo-lightbox-image img {
+  object-fit: contain;
 }
 
 .match-cta {
