@@ -15,7 +15,7 @@ const allowedInterests = new Set(['player', 'parent', 'volunteer', 'sponsor', ''
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const rateLimit = new Map<string, { count: number; resetAt: number }>()
 const toEmail = process.env.INQUIRY_TO_EMAIL || 'ethiounitysmyrna@gmail.com'
-const fromEmail = process.env.INQUIRY_FROM_EMAIL || 'Ethio Unity <onboarding@resend.dev>'
+const fromEmail = process.env.INQUIRY_FROM_EMAIL || 'Ethio Unity <info@ethiounity.com>'
 
 const clean = (value: unknown, maxLength: number) => {
     if (typeof value !== 'string') return ''
@@ -108,6 +108,14 @@ const sendInquiryEmail = async ({
     })
 
     if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Resend email delivery failed', {
+            status: response.status,
+            from: fromEmail,
+            to: toEmail,
+            error: errorText,
+        })
+
         return { ok: false, message: 'Email delivery failed. Please check the email provider settings.' }
     }
 
