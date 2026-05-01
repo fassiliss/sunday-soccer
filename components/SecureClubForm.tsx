@@ -38,14 +38,19 @@ export function SecureClubForm({ kind }: SecureClubFormProps) {
             website: String(formData.get('website') || ''),
         }
 
+        const controller = new AbortController()
+        const timeoutId = window.setTimeout(() => controller.abort(), 12_000)
+
         try {
             const response = await fetch('/api/inquiries', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 cache: 'no-store',
                 credentials: 'same-origin',
+                signal: controller.signal,
                 body: JSON.stringify(payload),
             })
+            window.clearTimeout(timeoutId)
             const responseText = await response.text()
             let result: { message?: string } = {}
 
@@ -67,6 +72,7 @@ export function SecureClubForm({ kind }: SecureClubFormProps) {
             setState('success')
             setMessage(result.message || 'Thanks. Your message was received.')
         } catch {
+            window.clearTimeout(timeoutId)
             event.currentTarget.reset()
             setState('success')
             setMessage('Thanks. Your message was sent.')
